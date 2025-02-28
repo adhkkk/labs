@@ -5,6 +5,15 @@ from scipy.optimize import curve_fit
 def linear_model(x, a, b):
     return a * x + b
 
+def calculate_r_squared(y_data, y_fit):
+    """
+    Вычисляет коэффициент детерминации R^2.
+    """
+    ss_res = np.sum((y_data - y_fit) ** 2)  # Сумма квадратов остатков
+    ss_tot = np.sum((y_data - np.mean(y_data)) ** 2)  # Общая сумма квадратов
+    r_squared = 1 - (ss_res / ss_tot)  # Коэффициент детерминации
+    return r_squared
+
 data1 = np.loadtxt('2sem/131/data/1.txt')  
 # data2 = np.loadtxt('data/1.txt')  
 # data3 = np.loadtxt('data/1.txt')  
@@ -29,14 +38,14 @@ params_laminar_1, covariance_laminar_1 = curve_fit(linear_model, x1_laminar, y1_
 a1_laminar, b1_laminar = params_laminar_1
 a_err1_laminar, b_err1_laminar = np.sqrt(np.diag(covariance_laminar_1))
 y_fit_laminar_1 = linear_model(x1_laminar,a1_laminar,b1_laminar)
-
+r1_squared_laminar = calculate_r_squared(y1_laminar,y_fit_laminar_1)
 
 params_turbulent_1, covariance_turbulent_1 = curve_fit(linear_model, x1_turbulent, y1_turbulent)
 
 a1_turbulent, b1_turbulent = params_turbulent_1
 a_err1_turbulent, b_err1_turbulent = np.sqrt(np.diag(covariance_turbulent_1))
 y_fit_turbulent_1 = linear_model(x1_turbulent,a1_turbulent,b1_turbulent)
-
+r1_squared_turbulent = calculate_r_squared(y1_turbulent,y_fit_turbulent_1)
 
 # x2 = data2[:, 0]
 # y2 = data2[:, 1] 
@@ -53,20 +62,22 @@ plt.figure()
 text_box_laminar_1 = (
     f"Параметры прямой:\n"
     f"a = {a1_laminar:.2f} ± {a_err1_laminar:.2f}\n"
-    f"b = {b1_laminar:.2f} ± {b_err1_laminar:.2f}"
+    f"b = {b1_laminar:.2f} ± {b_err1_laminar:.2f}\n"
+    f"$R^2$ = {r1_squared_laminar:.4f}"
 )
 
 text_box_turbulent_1 = (
     f"Параметры прямой:\n"
     f"a = {a1_turbulent:.2f} ± {a_err1_turbulent:.2f}\n"
-    f"b = {b1_turbulent:.2f} ± {b_err1_turbulent:.2f}"
+    f"b = {b1_turbulent:.2f} ± {b_err1_turbulent:.2f}\n"
+    f"$R^2$ = {r1_squared_turbulent:.4f}"
 )
 
-# plt.text(0.5, 0.95, text_box_laminar_1, transform=plt.gca().transAxes, fontsize=10, verticalalignment='top', bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
+# plt.text(0.5, 0.97, text_box_laminar_1, transform=plt.gca().transAxes, fontsize=10, verticalalignment='top', bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
 # plt.scatter(x1_laminar, y1_laminar, color='orange', label='Эксперимент')
 # plt.plot(x1_laminar, y_fit_laminar_1, label='Аппроксимация')
 
-plt.text(0.5, 0.95, text_box_turbulent_1, transform=plt.gca().transAxes, fontsize=10, verticalalignment='top', bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
+plt.text(0.5, 0.97, text_box_turbulent_1, transform=plt.gca().transAxes, fontsize=10, verticalalignment='top', bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
 plt.scatter(x1_turbulent, y1_turbulent, color='orange', label='Эксперимент')
 plt.plot(x1_turbulent, y_fit_turbulent_1, label='Аппроксимация')
 
